@@ -25,5 +25,8 @@
         "default": "Alt+Q"
       }
     }
-  }
+  },
+  "host_permissions": [
+    "*://*/*"
+  ]
 }
