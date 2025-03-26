@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="group-header" data-group-id="${g.id}">
               ${g.title || '未命名分组'}: ${g.count}
             </div>
-            <div class="group-content" id="content-${g.id}" style="height: 0px;" >
+            <div class="group-content" id="content-${g.id}" style="max-height: 0px;" >
               ${g.tabs.map(t => 
                 `<div class="tab-item" 
                      data-tab-id="${t.id}" 
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="group-header" data-group-id="ungrouped">
               未分组标签: ${ungrouped}
             </div>
-            <div class="group-content" id="content-ungrouped" style="height: 0px;">
+            <div class="group-content" id="content-ungrouped" style="max-height: 0px;">
               ${tabs.filter(t => t.groupId === -1).map(t => 
                 `<div class="tab-item" 
                      data-tab-id="${t.id}" 
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target.classList.contains('group-header')) {
           const header = event.target;
           const content = document.getElementById(`content-${header.dataset.groupId}`);
-          content.style.height = content.style.height === '0px' ? '200px' : '0px';
+          content.style.maxHeight = content.style.maxHeight === '0px' ? '400px' : '0px';
         }
       });
 
