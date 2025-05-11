@@ -8,32 +8,39 @@ document.addEventListener('DOMContentLoaded', () => {
           const group = groupMap.get(tab.groupId);
           if (group) {
             group.count++;
-            group.tabs.push(tab); // 存储tab对象
+            group.tabs.push(tab);
           }
         }
       });
 
       const groupsHTML = Array.from(groupMap.values())
         .filter(g => g.count > 0)
-        .map(g => `
+        .map(g => {
+          // 按字母顺序排序标签页
+          g.tabs.sort((a, b) => a.title.localeCompare(b.title));
+          return `
           <div class="group">
             <div class="group-header" data-group-id="${g.id}">
               ${g.title || '未命名分组'}: ${g.count}
             </div>
             <div class="group-content" id="content-${g.id}" style="max-height: 0px;" >
               ${g.tabs.map(t => 
-                `<div class="tab-item" 
+                `<div class="tab-item ${t.active ? 'active-tab' : ''}" 
                      data-tab-id="${t.id}" 
                      title="${t.title}">
                   ${t.title}
+                  <span class="close-tab" data-tab-id="${t.id}">×</span>
                 </div>`
               ).join('')}
             </div>
           </div>
-        `).join('');
+        `}).join('');
 
-        const ungrouped = tabs.filter(t => t.groupId === -1).length;
-      const total = tabs.length;
+        // 处理未分组标签
+        const ungroupedTabs = tabs.filter(t => t.groupId === -1);
+        ungroupedTabs.sort((a, b) => a.title.localeCompare(b.title));
+        const ungrouped = ungroupedTabs.length;
+        const total = tabs.length;
 
       document.getElementById('groups').innerHTML = groupsHTML + 
         (ungrouped ? `
@@ -42,16 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
               未分组标签: ${ungrouped}
             </div>
             <div class="group-content" id="content-ungrouped" style="max-height: 0px;">
-              ${tabs.filter(t => t.groupId === -1).map(t => 
+              ${ungroupedTabs.map(t => 
                 `<div class="tab-item" 
                      data-tab-id="${t.id}" 
                      title="${t.title}">
                   ${t.title}
+                  <span class="close-tab" data-tab-id="${t.id}">×</span>
                 </div>`
               ).join('')}
             </div>
           </div>` : '');
       document.getElementById('total').textContent = total;
+
       // 添加分组点击事件
       document.getElementById('groups').addEventListener('click', (event) => {
         if (event.target.classList.contains('group-header')) {
@@ -61,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // 统一处理标签点击事件（事件委托）
+      // 统一处理标签点击和关闭按钮事件
       document.getElementById('groups').addEventListener('click', (e) => {
         const tabItem = e.target.closest('.tab-item');
         if (tabItem) {
@@ -69,9 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
           chrome.tabs.update(tabId, { active: true });
           window.close();
         }
+        
+        if (e.target.classList.contains('close-tab')) {
+          const tabId = parseInt(e.target.dataset.tabId);
+          chrome.tabs.remove(tabId);
+          e.stopPropagation(); // 阻止事件冒泡
+          e.preventDefault();
+        }
       });
-
-      
     });
   });
 });

@@ -31,6 +31,31 @@
       text-overflow: ellipsis;
       overflow: hidden;
       border: 2px solid #fff;
+      position: relative;
+      background: #fff;
+    }
+    .tab-item.active-tab {
+      background: #e0f7fa;
+      border: 2px solid #4fc3f7;
+    }
+    .close-tab {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%) scale(1.5);
+      opacity: 0;
+      transition: opacity 0.2s;
+      cursor: pointer;
+      color: #999;
+
+    }
+    
+    .tab-item:hover .close-tab {
+      opacity: 1;
+    }
+    
+    .close-tab:hover {
+      color: #f00;
     }
     .total {
       font-weight: bold;
